@@ -198,16 +198,18 @@ function generateDeclaration() {
 
         declaration += `<type${entityType === 'nonScalable' ? '*' : ''}>    ${entityName} ${entityCountValue}\n`;
 
-        const propertyGroupsDiv = document.getElementById(`propertyGroups${i}`);
+        const propertyGroupsDiv = document.getElementById(`propertyGroups1`);
         const propertyGroups = propertyGroupsDiv.querySelectorAll('div');
-
+        let pgi = -1;
         propertyGroups.forEach((propertyGroupDiv, propertyGroupIndex) => {
             if (propertyGroupDiv.id !== '') {
                 return;
             }
 
-            const instantiationProbability = propertyGroupDiv.querySelector(`#instantiationProbability${i}_${propertyGroupIndex + 1}`).value;
-            const typeAssertion = propertyGroupDiv.querySelector(`#typeAssertion${i}_${propertyGroupIndex + 1}`).value;
+            pgi += 1;
+
+            const instantiationProbability = propertyGroupDiv.querySelector(`#instantiationProbability${i}_${pgi + 1}`).value;
+            const typeAssertion = propertyGroupDiv.querySelector(`#typeAssertion${i}_${pgi + 1}`).value;
 
             declaration += `\t<pgroup>   ${instantiationProbability}`;
             if (typeAssertion) {
@@ -215,15 +217,15 @@ function generateDeclaration() {
             }
             declaration += '\n';
 
-            const literalPropertiesDiv = propertyGroupDiv.querySelector(`#literalProperties${i}_${propertyGroupIndex + 1}`);
+            const literalPropertiesDiv = propertyGroupDiv.querySelector(`#literalProperties${i}_${pgi + 1}`);
             const literalProperties = literalPropertiesDiv.querySelectorAll('div');
 
             literalProperties.forEach((propertyDiv, index) => {
-                const propertyName = propertyDiv.querySelector(`#propertyName${i}_${propertyGroupIndex + 1}_${index + 1}`).value;
-                const literalType = propertyDiv.querySelector(`#literalType${i}_${propertyGroupIndex + 1}_${index + 1}`).value;
-                const minRange = propertyDiv.querySelector(`#minRange${i}_${propertyGroupIndex + 1}_${index + 1}`).value;
-                const maxRange = propertyDiv.querySelector(`#maxRange${i}_${propertyGroupIndex + 1}_${index + 1}`).value;
-                const distributionType = propertyDiv.querySelector(`#distributionType${i}_${propertyGroupIndex + 1}_${index + 1}`).value;
+                const propertyName = propertyDiv.querySelector(`#propertyName${i}_${pgi + 1}_${index + 1}`).value;
+                const literalType = propertyDiv.querySelector(`#literalType${i}_${pgi + 1}_${index + 1}`).value;
+                const minRange = propertyDiv.querySelector(`#minRange${i}_${pgi + 1}_${index + 1}`).value;
+                const maxRange = propertyDiv.querySelector(`#maxRange${i}_${pgi + 1}_${index + 1}`).value;
+                const distributionType = propertyDiv.querySelector(`#distributionType${i}_${pgi + 1}_${index + 1}`).value;
 
                 declaration += `\t\t#predicate    ${propertyName} ${literalType}`;
                 if (minRange && maxRange) {
