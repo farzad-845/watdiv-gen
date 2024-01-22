@@ -1,0 +1,101 @@
+version: '3.7'
+services:
+  watdiv-service:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: watdiv_api
+    hostname: watdiv-service
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    expose:
+      - 8000
+    ports:
+      - "127.0.0.1:8087:8000"
+    env_file: .env
+    networks:
+      - watdiv-network
+    volumes:
+      - .:/app:rw # map data and files from parent directory in host to watdiv directory in docker container
+      - ./static:/app/static
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: on-failure
+
+  rabbitmq:
+    image: rabbitmq:3.7-management
+    container_name: watdiv_mq
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - watdiv-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    restart: on-failure
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watdiv-celery-worker
+    hostname: celery_worker
+    command: sh -c "celery -A _base worker -P gevent -Q watdiv,celery -l info --concurrency=1"
+    env_file: .env
+    environment:
+      - C_FORCE_ROOT=true
+    volumes:
+      - ./.env:/app/.env
+      - ./static:/app/static
+      - ./schemas:/app/schemas
+    depends_on:
+      - watdiv-service
+      - rabbitmq
+    networks:
+      - watdiv-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: on-failure
+
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watdiv_celery_beat
+    hostname: celery_beat
+    command: sh -c "celery -A _base beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    depends_on:
+      - watdiv-service
+      - rabbitmq
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - watdiv-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: on-failure
+
+
+networks:
+  watdiv-network:
+
+
