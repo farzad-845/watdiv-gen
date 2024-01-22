@@ -162,3 +162,5 @@ cython_debug/
 temp/*
 watdiv_api/static/*
 watdiv_api/schemas/*
+
+.Ds_Store
