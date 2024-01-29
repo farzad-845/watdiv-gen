@@ -4,7 +4,9 @@ import subprocess
 
 from datetime import datetime
 from celery import shared_task
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 def generate_datetime_uuid_folder_name():
@@ -52,13 +54,24 @@ def send_results(folder_name, email):
     else:
         subject = 'WatDiv Query Generator | Dataset Ready'
         message = f"""
-            Your dataset is ready for download, 
-            Please visit the following link to download your dataset:
-            http://localhost:8087/api/v1/download/
-            {folder_name}
-        """
+        Your dataset is ready for download,
+        Please visit the following link to download your dataset:
+        <a href="http://localhost:8087/api/v1/download/{folder_name.split('/')[-1]}">Download Dataset</a>
+    """
+
     from_email = 'watdiv.gen@gmail.com'
-    recipient_list = [email]
-    send_mail(subject, message, from_email, recipient_list)
+    # Render the HTML template
+    html_message = render_to_string('email.html', {'download_link': f'http://localhost:8087/api/v1/download/{folder_name.split("/")[-1]}'})
+    # Create plain text version of the HTML content (for email clients that don't support HTML)
+    plain_text_message = strip_tags(html_message)
+
+    send_mail(
+        subject,
+        plain_text_message,  # Use plain text as the message body
+        from_email,
+        [email],
+        html_message=html_message,  # Attach the HTML content
+    )
+
 
 

@@ -40,3 +40,11 @@ for query in /opt/watdiv/testsuite/*.txt; do
     echo "Generating query $query with count $QUERY_COUNT and recurrence factor $RECURRENCE_FACTOR"
     ./watdiv -q $MODEL /opt/watdiv/testsuite/$query $QUERY_COUNT $RECURRENCE_FACTOR > $OUTPUT_PATH/queries/$query
 done
+
+
+# generate the compress file for the dataset and queries using tar
+cd $OUTPUT_PATH
+tar -czvf dataset.tar.gz dataset.nt queries
+
+## remove the folder
+# rm -rf dataset.nt queries

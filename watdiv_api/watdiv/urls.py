@@ -4,5 +4,7 @@ from .views import WatDivGenerator, FileDownloader
 
 urlpatterns = [
     path('generate/', WatDivGenerator.as_view(), name='watdiv-generate'),
-    path('download/', FileDownloader.as_view(), name='watdiv-download'),
+
+    # get the file name from the endpoint
+    path('download/<str:filename>', FileDownloader.as_view(), name='watdiv-download'),
 ]
