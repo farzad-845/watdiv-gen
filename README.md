@@ -57,7 +57,7 @@ WatDiv-Gen
 ### Components Schema
 <div align="center">
   <a href="https://github.com/farzad-845/watdiv-gen">
-    <img src="assets/WatDiv%20Design.svg" alt="Logo" width="816" height="740">
+    <img src="assets/watdiv-gen.png" alt="Logo">
   </a>
 </div>
 
